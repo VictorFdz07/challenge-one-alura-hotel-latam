@@ -29,4 +29,8 @@ public class ReservaController {
     public int modificar(LocalDate fechaEntrada, LocalDate fechaSalida, float valor, String formaPago, Integer id) {
         return reservaDAO.moficar(fechaEntrada,fechaSalida,valor,formaPago,id);
     }
+
+    public int eliminar(Integer id) {
+        return reservaDAO.eliminar(id);
+    }
 }

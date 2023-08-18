@@ -257,6 +257,15 @@ public class Busqueda extends JFrame {
 		btnEditar.add(lblEditar);
 		
 		JPanel btnEliminar = new JPanel();
+		btnEliminar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int opcion = panel.getSelectedIndex();
+				eliminar(opcion);
+				limpiarTabla();
+				cargarTabla(opcion);
+			}
+		});
 		btnEliminar.setLayout(null);
 		btnEliminar.setBackground(new Color(12, 138, 199));
 		btnEliminar.setBounds(767, 508, 122, 35);
@@ -279,6 +288,46 @@ public class Busqueda extends JFrame {
 		return tbReservas.getSelectedRowCount() == 0 || tbReservas.getSelectedColumnCount() == 0;
 	}
 
+	private void eliminar(int opcion) {
+		if (opcion==0){
+			if (tieneFilaElegidaReservas()) {
+				JOptionPane.showMessageDialog(this, "Por favor, elije un item");
+				return;
+			}
+
+			Optional.ofNullable(modelo.getValueAt(tbReservas.getSelectedRow(), tbReservas.getSelectedColumn()))
+					.ifPresentOrElse(fila -> {
+						Integer id = Integer.valueOf(modelo.getValueAt(tbReservas.getSelectedRow(), 0).toString());
+
+						int cantidadEliminada;
+
+						cantidadEliminada =  this.reservaController.eliminar(id);
+
+						modelo.removeRow(tbReservas.getSelectedRow());
+
+						JOptionPane.showMessageDialog(this, cantidadEliminada + " Item eliminado con éxito!");
+					}, () -> JOptionPane.showMessageDialog(this, "Por favor, elije un item"));
+		}
+		if (opcion==1){
+			if (tieneFilaElegida()) {
+				JOptionPane.showMessageDialog(this, "Por favor, elije un item");
+				return;
+			}
+
+			Optional.ofNullable(modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), tbHuespedes.getSelectedColumn()))
+					.ifPresentOrElse(fila -> {
+						Integer id = Integer.valueOf(modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), 0).toString());
+
+						int cantidadEliminada;
+
+						cantidadEliminada =  this.huespedController.eliminar(id);
+
+						modeloHuesped.removeRow(tbHuespedes.getSelectedRow());
+
+						JOptionPane.showMessageDialog(this, cantidadEliminada + " Item eliminado con éxito!");
+					}, () -> JOptionPane.showMessageDialog(this, "Por favor, elije un item"));
+		}
+	}
 
 	private void modificar(int opcion) {
 		if (opcion==0){
@@ -317,7 +366,7 @@ public class Busqueda extends JFrame {
 						String nombre = (String) modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), 1);
 						String apellido = (String) modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), 2);
 
-						String fechaNacimientoStr = modelo.getValueAt(tbReservas.getSelectedRow(), 3).toString();
+						String fechaNacimientoStr = modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), 3).toString();
 
 						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 						LocalDate fechaNacimiento = LocalDate.parse(fechaNacimientoStr, formatter);

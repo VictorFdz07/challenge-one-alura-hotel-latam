@@ -30,4 +30,8 @@ public class HuespedController {
     public int modificar(String nombre, String apellido, LocalDate fechaNacimiento, String nacionalidad, String telefono, Integer idReserva, Integer id) {
         return huespedDAO.modificar(nombre,apellido,fechaNacimiento,nacionalidad,telefono,idReserva,id);
     }
+
+    public int eliminar(Integer id){
+        return huespedDAO.eliminar(id);
+    }
 }

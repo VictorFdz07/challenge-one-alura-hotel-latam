@@ -146,4 +146,23 @@ public class ReservaDAO {
             throw new RuntimeException(e);
         }
     }
+
+    public int eliminar(Integer id) {
+        try {
+            final PreparedStatement statement = con.prepareStatement("DELETE FROM reservas WHERE ID = ?");
+
+            try (statement) {
+                statement.setInt(1, id);
+                statement.execute();
+
+                int updateCount = statement.getUpdateCount();
+
+                return updateCount;
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "No se ha podido eliminar el item "
+                    , "Error", JOptionPane.ERROR_MESSAGE);
+            throw new RuntimeException(e);
+        }
+    }
 }
