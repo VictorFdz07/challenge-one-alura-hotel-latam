@@ -323,18 +323,19 @@ public class ReservasView extends JFrame {
 		btnsiguiente.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (ReservasView.txtFechaEntrada.getDate() != null && ReservasView.txtFechaSalida.getDate() != null) {		
-					RegistroHuesped registro = new RegistroHuesped();
-					registro.setVisible(true);
-
+				if (ReservasView.txtFechaEntrada.getDate() != null && ReservasView.txtFechaSalida.getDate() != null) {
 					LocalDate fechaEntrada = txtFechaEntrada.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 					LocalDate fechaSalida = txtFechaSalida.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 					String formaPago = txtFormaPago.getSelectedItem().toString();
 					Float valor = Float.valueOf(txtValor.getText());
 
 					Reserva reserva = new Reserva(fechaEntrada,fechaSalida,valor,formaPago);
-
 					guardar(reserva);
+
+					RegistroHuesped registro = new RegistroHuesped();
+					registro.setVisible(true);
+
+					dispose();
 				} else {
 					JOptionPane.showMessageDialog(null, "Debes llenar todos los campos.");
 				}

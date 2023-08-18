@@ -260,6 +260,9 @@ public class RegistroHuesped extends JFrame {
 						&&!nacionalidad.equals("")&&!telefono.equals("")&&idReserva>0){
 					Huesped huesped = new Huesped(nombre,apellido,fechaNacimiento,nacionalidad,telefono,idReserva);
 					guardar(huesped);
+					Exito exito = new Exito();
+					exito.setVisible(true);
+					dispose();
 				}else {
 					JOptionPane.showMessageDialog(null, "LLene todos los campos "
 							, "Error", JOptionPane.ERROR_MESSAGE);
