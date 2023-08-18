@@ -10,6 +10,9 @@ import javax.swing.JOptionPane;
 import javax.swing.ImageIcon;
 import java.awt.Color;
 import javax.swing.JTextField;
+
+import com.alura.hotel.controller.ReservaController;
+import com.alura.hotel.modelo.Reserva;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Font;
 import javax.swing.JComboBox;
@@ -20,6 +23,11 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.Toolkit;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
@@ -36,6 +44,8 @@ public class ReservasView extends JFrame {
 	int xMouse, yMouse;
 	private JLabel labelExit;
 	private JLabel labelAtras;
+	private ReservaController reservaController;
+	private float valorReserva;
 
 	/**
 	 * Launch the application.
@@ -58,6 +68,8 @@ public class ReservasView extends JFrame {
 	 */
 	public ReservasView() {
 		super("Reserva");
+		this.reservaController = new ReservaController();
+
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ReservasView.class.getResource("../imagenes/aH-40px.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 910, 560);
@@ -254,23 +266,6 @@ public class ReservasView extends JFrame {
 		txtFechaEntrada.setFont(new Font("Roboto", Font.PLAIN, 18));
 		panel.add(txtFechaEntrada);
 
-		txtFechaSalida = new JDateChooser();
-		txtFechaSalida.getCalendarButton().setIcon(new ImageIcon(ReservasView.class.getResource("../imagenes/icon-reservas.png")));
-		txtFechaSalida.getCalendarButton().setFont(new Font("Roboto", Font.PLAIN, 11));
-		txtFechaSalida.setBounds(68, 246, 289, 35);
-		txtFechaSalida.getCalendarButton().setBounds(267, 1, 21, 31);
-		txtFechaSalida.setBackground(Color.WHITE);
-		txtFechaSalida.setFont(new Font("Roboto", Font.PLAIN, 18));
-		txtFechaSalida.addPropertyChangeListener(new PropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent evt) {
-				//Activa el evento, después del usuario seleccionar las fechas se debe calcular el valor de la reserva
-			}
-		});
-		txtFechaSalida.setDateFormatString("yyyy-MM-dd");
-		txtFechaSalida.getCalendarButton().setBackground(SystemColor.textHighlight);
-		txtFechaSalida.setBorder(new LineBorder(new Color(255, 255, 255), 0));
-		panel.add(txtFechaSalida);
-
 		txtValor = new JTextField();
 		txtValor.setBackground(SystemColor.text);
 		txtValor.setHorizontalAlignment(SwingConstants.CENTER);
@@ -281,6 +276,39 @@ public class ReservasView extends JFrame {
 		txtValor.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		panel.add(txtValor);
 		txtValor.setColumns(10);
+
+		txtFechaSalida = new JDateChooser();
+		txtFechaSalida.getCalendarButton().setIcon(new ImageIcon(ReservasView.class.getResource("../imagenes/icon-reservas.png")));
+		txtFechaSalida.getCalendarButton().setFont(new Font("Roboto", Font.PLAIN, 11));
+		txtFechaSalida.setBounds(68, 246, 289, 35);
+		txtFechaSalida.getCalendarButton().setBounds(267, 1, 21, 31);
+		txtFechaSalida.setBackground(Color.WHITE);
+		txtFechaSalida.setFont(new Font("Roboto", Font.PLAIN, 18));
+		txtFechaSalida.addPropertyChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (evt.getPropertyName().equals("date")) { // Asegurarse de que el evento provenga de un cambio de fecha
+
+					// Obtener instancias de Calendar de las fechas seleccionadas
+					Calendar fechaEntrada = txtFechaEntrada.getCalendar();
+					Calendar fechaSalida = txtFechaSalida.getCalendar();
+
+					// Calcular la diferencia en milisegundos y convertir a días
+					long diferenciaMillis = fechaSalida.getTimeInMillis() - fechaEntrada.getTimeInMillis();
+					long diferenciaDias = TimeUnit.MILLISECONDS.toDays(diferenciaMillis);
+
+					// Realizar algún cálculo para determinar el valor de la reserva (por ejemplo, multiplicar por una tarifa diaria)
+					float tarifaDiaria = 120.0f; // Ejemplo de tarifa diaria
+					valorReserva = diferenciaDias * tarifaDiaria;
+
+					// Actualizar el campo de texto con el valor de la reserva
+					txtValor.setText(String.valueOf(valorReserva));
+				}
+			}
+		});
+		txtFechaSalida.setDateFormatString("yyyy-MM-dd");
+		txtFechaSalida.getCalendarButton().setBackground(SystemColor.textHighlight);
+		txtFechaSalida.setBorder(new LineBorder(new Color(255, 255, 255), 0));
+		panel.add(txtFechaSalida);
 
 
 		txtFormaPago = new JComboBox();
@@ -298,6 +326,15 @@ public class ReservasView extends JFrame {
 				if (ReservasView.txtFechaEntrada.getDate() != null && ReservasView.txtFechaSalida.getDate() != null) {		
 					RegistroHuesped registro = new RegistroHuesped();
 					registro.setVisible(true);
+
+					LocalDate fechaEntrada = txtFechaEntrada.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					LocalDate fechaSalida = txtFechaSalida.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					String formaPago = txtFormaPago.getSelectedItem().toString();
+					Float valor = Float.valueOf(txtValor.getText());
+
+					Reserva reserva = new Reserva(fechaEntrada,fechaSalida,valor,formaPago);
+
+					guardar(reserva);
 				} else {
 					JOptionPane.showMessageDialog(null, "Debes llenar todos los campos.");
 				}
@@ -311,7 +348,11 @@ public class ReservasView extends JFrame {
 
 
 	}
-		
+
+	private void guardar(Reserva reserva) {
+		this.reservaController.guardar(reserva);
+	}
+
 	//Código que permite mover la ventana por la pantalla según la posición de "x" y "y"	
 	 private void headerMousePressed(java.awt.event.MouseEvent evt) {
 	        xMouse = evt.getX();

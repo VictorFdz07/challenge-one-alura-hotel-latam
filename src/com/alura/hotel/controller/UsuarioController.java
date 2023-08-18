@@ -11,7 +11,7 @@ public class UsuarioController {
         this.usuarioDAO = new UsuarioDAO(new ConnectionFactory().recuperaConexion());
     }
 
-    public boolean login(String usuario, String clave) {
+    public int login(String usuario, String clave) {
         return usuarioDAO.login(usuario,clave);
     }
 }

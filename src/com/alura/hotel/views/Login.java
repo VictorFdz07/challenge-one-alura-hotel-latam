@@ -31,7 +31,7 @@ public class Login extends JFrame {
 	private JPasswordField txtContrasena;
 	int xMouse, yMouse;
 	private JLabel labelExit;
-	UsuarioController usuarioController;
+	private UsuarioController usuarioController;
 
 	/**
 	 * Launch the application.
@@ -243,12 +243,16 @@ public class Login extends JFrame {
 		String usuario= txtUsuario.getText();
 		String clave= String.valueOf(txtContrasena.getPassword());
 
-		if(this.usuarioController.login(usuario, clave)){
-			MenuUsuario menu = new MenuUsuario();
-			menu.setVisible(true);
-			dispose();
-		}else {
-			JOptionPane.showMessageDialog(this, "Usuario o Contraseña no válidos");
+		int encontrado = this.usuarioController.login(usuario, clave);
+
+		if (!usuario.equals("") && !clave.equals("")){
+			if(encontrado==1){
+				MenuUsuario menu = new MenuUsuario();
+				menu.setVisible(true);
+				dispose();
+			}else {
+				JOptionPane.showMessageDialog(this, "Usuario o Contraseña no válidos");
+			}
 		}
 	} 
 	 private void headerMousePressed(java.awt.event.MouseEvent evt) {
