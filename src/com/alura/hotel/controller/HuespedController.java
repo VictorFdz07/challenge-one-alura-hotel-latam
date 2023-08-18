@@ -4,6 +4,7 @@ import com.alura.hotel.dao.HuespedDAO;
 import com.alura.hotel.factory.ConnectionFactory;
 import com.alura.hotel.modelo.Huesped;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class HuespedController {
@@ -24,5 +25,9 @@ public class HuespedController {
 
     public List<Huesped> listar(){
         return huespedDAO.listar();
+    }
+
+    public int modificar(String nombre, String apellido, LocalDate fechaNacimiento, String nacionalidad, String telefono, Integer idReserva, Integer id) {
+        return huespedDAO.modificar(nombre,apellido,fechaNacimiento,nacionalidad,telefono,idReserva,id);
     }
 }

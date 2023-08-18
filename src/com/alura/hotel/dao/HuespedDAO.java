@@ -5,6 +5,7 @@ import com.alura.hotel.modelo.Huesped;
 
 import javax.swing.*;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,5 +126,38 @@ public class HuespedDAO {
             throw new RuntimeException(e);
         }
         return resultado;
+    }
+
+    public int modificar(String nombre, String apellido, LocalDate fechaNacimiento, String nacionalidad, String telefono, Integer idReserva, Integer id) {
+        try{
+
+            final PreparedStatement statement = con.prepareStatement("UPDATE huespedes SET "
+                    + "nombre = ?"
+                    + ", apellido = ?"
+                    + ", fechaNacimiento = ?"
+                    + ", nacionalidad = ?"
+                    + ", telefono = ?"
+                    + ", idReserva = ?"
+                    + " WHERE ID = ?");
+
+            try(statement){
+
+                statement.setString(1, nombre);
+                statement.setString(2,apellido);
+                statement.setDate(3, Date.valueOf(fechaNacimiento));
+                statement.setString(4,nacionalidad);
+                statement.setString(5,telefono);
+                statement.setInt(6, idReserva);
+                statement.setInt(7, id);
+
+                statement.execute();
+
+                int updateCount = statement.getUpdateCount();
+
+                return updateCount;
+            }
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

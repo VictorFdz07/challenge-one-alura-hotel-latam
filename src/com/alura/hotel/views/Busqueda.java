@@ -15,7 +15,9 @@ import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @SuppressWarnings("serial")
 public class Busqueda extends JFrame {
@@ -231,6 +233,15 @@ public class Busqueda extends JFrame {
 		lblBuscar.setFont(new Font("Roboto", Font.PLAIN, 18));
 		
 		JPanel btnEditar = new JPanel();
+		btnEditar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int opcion = panel.getSelectedIndex();
+				modificar(opcion);
+				limpiarTabla();
+				cargarTabla(opcion);
+			}
+		});
 		btnEditar.setLayout(null);
 		btnEditar.setBackground(new Color(12, 138, 199));
 		btnEditar.setBounds(635, 508, 122, 35);
@@ -258,6 +269,42 @@ public class Busqueda extends JFrame {
 		lblEliminar.setBounds(0, 0, 122, 35);
 		btnEliminar.add(lblEliminar);
 		setResizable(false);
+	}
+
+	private boolean tieneFilaElegida() {
+		return tbHuespedes.getSelectedRowCount() == 0 || tbHuespedes.getSelectedColumnCount() == 0;
+	}
+	private boolean tieneFilaElegidaReservas() {
+		return tbReservas.getSelectedRowCount() == 0 || tbReservas.getSelectedColumnCount() == 0;
+	}
+
+
+	private void modificar(int opcion) {
+		if (opcion==0){
+
+		}
+		if (opcion==1){
+			if (tieneFilaElegida()) {
+				JOptionPane.showMessageDialog(this, "Por favor, elije un item");
+				return;
+			}
+			Optional.ofNullable(modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), tbHuespedes.getSelectedColumn()))
+					.ifPresentOrElse(fila -> {
+						Integer id = Integer.valueOf(modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), 0).toString());
+						String nombre = (String) modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), 1);
+						String apellido = (String) modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), 2);
+						LocalDate fechaNacimiento = (LocalDate) modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(),3);
+						String nacionalidad = (String)  modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), 4);
+						String telefono = (String)  modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), 5);
+						Integer idReserva = Integer.valueOf(modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), 6).toString());
+
+						int cantidadModificada;
+
+						cantidadModificada = this.huespedController.modificar(nombre, apellido, fechaNacimiento, nacionalidad,telefono, idReserva,id);
+
+						JOptionPane.showMessageDialog(this, cantidadModificada + " Item modificado con éxito!");
+					}, () -> JOptionPane.showMessageDialog(this, "Por favor, elije un item"));
+		}
 	}
 
 	private void limpiarTabla() {
