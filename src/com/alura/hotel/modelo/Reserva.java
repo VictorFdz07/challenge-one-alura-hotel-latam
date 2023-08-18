@@ -16,10 +16,19 @@ public class Reserva {
         this.formaPago = formaPago;
     }
 
+    public Reserva(int id, LocalDate fechaEntrada, LocalDate fechaSalida, float valor, String formaPago) {
+        this.id = id;
+        this.fechaEntrada = fechaEntrada;
+        this.fechaSalida = fechaSalida;
+        this.valor = valor;
+        this.formaPago = formaPago;
+    }
+
     public Integer getId() {
         return id;
     }
-    public void setId(int anInt) {
+    public void setId(int id) {
+        this.id = id;
     }
     public LocalDate getFechaEntrada() {
         return fechaEntrada;

@@ -1,25 +1,21 @@
 package com.alura.hotel.views;
 
+import com.alura.hotel.controller.HuespedController;
+import com.alura.hotel.controller.ReservaController;
+import com.alura.hotel.modelo.Huesped;
+import com.alura.hotel.modelo.Reserva;
+
 import java.awt.EventQueue;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ImageIcon;
 import java.awt.Color;
-import javax.swing.JLabel;
 import java.awt.Font;
-import javax.swing.JTabbedPane;
 import java.awt.Toolkit;
-import javax.swing.SwingConstants;
-import javax.swing.JSeparator;
-import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class Busqueda extends JFrame {
@@ -33,6 +29,8 @@ public class Busqueda extends JFrame {
 	private JLabel labelAtras;
 	private JLabel labelExit;
 	int xMouse, yMouse;
+	private HuespedController huespedController;
+	private ReservaController reservaController;
 
 	/**
 	 * Launch the application.
@@ -54,6 +52,9 @@ public class Busqueda extends JFrame {
 	 * Create the frame.
 	 */
 	public Busqueda() {
+		this.huespedController = new HuespedController();
+		this.reservaController = new ReservaController();
+
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Busqueda.class.getResource("../imagenes/lupa2.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 910, 571);
@@ -211,7 +212,9 @@ public class Busqueda extends JFrame {
 		btnbuscar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-
+				limpiarTabla();
+				int opcion = panel.getSelectedIndex();
+				cargarTabla(opcion);
 			}
 		});
 		btnbuscar.setLayout(null);
@@ -256,8 +259,66 @@ public class Busqueda extends JFrame {
 		btnEliminar.add(lblEliminar);
 		setResizable(false);
 	}
-	
-//Código que permite mover la ventana por la pantalla según la posición de "x" y "y"
+
+	private void limpiarTabla() {
+		modelo.getDataVector().clear();
+		modeloHuesped.getDataVector().clear();
+	}
+
+	private void cargarTabla(int opcion) {
+		if (!txtBuscar.getText().equals("")){
+			if (opcion==0){
+				int idReserva = Integer.parseInt(txtBuscar.getText());
+				List<Reserva> reservas = this.reservaController.listarPorNoReserva(idReserva);
+				reservas.forEach(reserva -> modelo.addRow(new Object[] {
+						reserva.getId(),
+						reserva.getFechaEntrada(),
+						reserva.getFechaSalida(),
+						reserva.getValor(),
+						reserva.getFormaPago()
+				}));
+			}
+			else if (opcion==1){
+				List<Huesped> huespedes = this.huespedController.listarPorApellido(txtBuscar.getText());
+
+				huespedes.forEach(huesped -> modeloHuesped.addRow(new Object[] {
+						huesped.getId(),
+						huesped.getNombre(),
+						huesped.getApellido(),
+						huesped.getFechaNacimiento(),
+						huesped.getNacionalidad(),
+						huesped.getTelefono(),
+						huesped.getIdReserva()
+				}));
+			}
+		}else{
+			if (opcion==0){
+				List<Reserva> reservas = this.reservaController.listar();
+				reservas.forEach(reserva -> modelo.addRow(new Object[] {
+						reserva.getId(),
+						reserva.getFechaEntrada(),
+						reserva.getFechaSalida(),
+						reserva.getValor(),
+						reserva.getFormaPago()
+				}));
+			}
+			else if (opcion==1){
+				List<Huesped> huespedes = this.huespedController.listar();
+
+				huespedes.forEach(huesped -> modeloHuesped.addRow(new Object[] {
+						huesped.getId(),
+						huesped.getNombre(),
+						huesped.getApellido(),
+						huesped.getFechaNacimiento(),
+						huesped.getNacionalidad(),
+						huesped.getTelefono(),
+						huesped.getIdReserva()
+				}));
+			}
+		}
+	}
+
+	//Código que permite mover la ventana por la pantalla según la posición de "x" y "y"
 	 private void headerMousePressed(java.awt.event.MouseEvent evt) {
 	        xMouse = evt.getX();
 	        yMouse = evt.getY();
