@@ -130,7 +130,6 @@ public class HuespedDAO {
 
     public int modificar(String nombre, String apellido, LocalDate fechaNacimiento, String nacionalidad, String telefono, Integer idReserva, Integer id) {
         try{
-
             final PreparedStatement statement = con.prepareStatement("UPDATE huespedes SET "
                     + "nombre = ?"
                     + ", apellido = ?"

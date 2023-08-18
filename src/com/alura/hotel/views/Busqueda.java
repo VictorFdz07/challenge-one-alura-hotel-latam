@@ -16,6 +16,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -281,7 +282,29 @@ public class Busqueda extends JFrame {
 
 	private void modificar(int opcion) {
 		if (opcion==0){
+			if (tieneFilaElegidaReservas()) {
+				JOptionPane.showMessageDialog(this, "Por favor, elije un item");
+				return;
+			}
+			Optional.ofNullable(modelo.getValueAt(tbReservas.getSelectedRow(), tbReservas.getSelectedColumn()))
+					.ifPresentOrElse(fila -> {
+						Integer id = Integer.valueOf(modelo.getValueAt(tbReservas.getSelectedRow(), 0).toString());
+						String fechaEntradaStr = modelo.getValueAt(tbReservas.getSelectedRow(), 1).toString();
+						String fechaSalidaStr = modelo.getValueAt(tbReservas.getSelectedRow(), 2).toString();
 
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+						LocalDate fechaEntrada = LocalDate.parse(fechaEntradaStr, formatter);
+						LocalDate fechaSalida = LocalDate.parse(fechaSalidaStr, formatter);
+
+						Float valor = Float.valueOf(modelo.getValueAt(tbReservas.getSelectedRow(), 3).toString());
+						String formaPago = (String)  modelo.getValueAt(tbReservas.getSelectedRow(), 4);
+
+						int cantidadModificada;
+
+						cantidadModificada = this.reservaController.modificar(fechaEntrada, fechaSalida, valor, formaPago,id);
+
+						JOptionPane.showMessageDialog(this, cantidadModificada + " Item modificado con éxito!");
+					}, () -> JOptionPane.showMessageDialog(this, "Por favor, elije un item"));
 		}
 		if (opcion==1){
 			if (tieneFilaElegida()) {
@@ -293,7 +316,12 @@ public class Busqueda extends JFrame {
 						Integer id = Integer.valueOf(modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), 0).toString());
 						String nombre = (String) modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), 1);
 						String apellido = (String) modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), 2);
-						LocalDate fechaNacimiento = (LocalDate) modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(),3);
+
+						String fechaNacimientoStr = modelo.getValueAt(tbReservas.getSelectedRow(), 3).toString();
+
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+						LocalDate fechaNacimiento = LocalDate.parse(fechaNacimientoStr, formatter);
+
 						String nacionalidad = (String)  modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), 4);
 						String telefono = (String)  modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), 5);
 						Integer idReserva = Integer.valueOf(modeloHuesped.getValueAt(tbHuespedes.getSelectedRow(), 6).toString());

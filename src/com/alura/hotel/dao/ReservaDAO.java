@@ -4,6 +4,7 @@ import com.alura.hotel.modelo.Reserva;
 
 import javax.swing.*;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,5 +118,32 @@ public class ReservaDAO {
             throw new RuntimeException(e);
         }
         return resultado;
+    }
+
+    public int moficar(LocalDate fechaEntrada, LocalDate fechaSalida, float valor, String formaPago, Integer id) {
+        try{
+            final PreparedStatement statement = con.prepareStatement("UPDATE reservas SET "
+                    + "fechaEntrada = ?"
+                    + ", fechaSalida = ?"
+                    + ", valor = ?"
+                    + ", formaPago = ?"
+                    + " WHERE ID = ?");
+
+            try(statement){
+                statement.setDate(1, Date.valueOf(fechaEntrada));
+                statement.setDate(2, Date.valueOf(fechaSalida));
+                statement.setFloat(3,valor);
+                statement.setString(4,formaPago);
+                statement.setInt(5, id);
+
+                statement.execute();
+
+                int updateCount = statement.getUpdateCount();
+
+                return updateCount;
+            }
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
